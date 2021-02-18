@@ -46,7 +46,7 @@ func New(fsys fs.FS, root string) *Walker {
 	}
 }
 
-// Next steps to the next file or directory,
+// Next visits the next file or directory,
 // which will then be available through the Path, Entry,
 // and Err methods.
 //
@@ -101,6 +101,12 @@ func (w *Walker) Entry() fs.DirEntry {
 // and avoid the ReadDir entirely.
 // The second visit is after a failed ReadDir and returns the error
 // from ReadDir. (If ReadDir succeeds, there is no second visit.)
+//
+// It is possible for ReadDir to return entries along with an error.
+// In that case, after the second visit reporting the error,
+// w will walk through the entries returned by ReadDir.
+// That set of entries may be incomplete because of the error.
+// To avoid visiting them, call SkipDir.
 func (w *Walker) Err() error {
 	return w.cur.err
 }
